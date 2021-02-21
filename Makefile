@@ -5,11 +5,11 @@ CXXFLAGS=-std=c++20 -Wno-deprecated-anon-enum-enum-conversion
 INCLUDE= -Isrc $(shell pkg-config --cflags lal lalsimulation gsl)
 LIBS= $(shell pkg-config --libs lal lalsimulation gsl) -lm -fopenmp
 
-openmp: parareal.o LALSimIMREOBNRv2.o write_waveform.c
-	$(CC) $(CFLAGS) $(INCLUDE) parareal.o LALSimIMREOBNRv2.o write_waveform.c -o write_waveform $(LIBS)
+openmp: parareal.o LALSimIMREOBNRv2.o src/write_waveform.c
+	$(CC) $(CFLAGS) $(INCLUDE) parareal.o LALSimIMREOBNRv2.o src/write_waveform.c -o write_waveform $(LIBS)
 
-oneapi: parareal_oneapi.o LALSimIMREOBNRv2.o write_waveform.c
-	$(CXX) $(CFLAGS) $(CXXFLAGS) $(INCLUDE) parareal_oneapi.o LALSimIMREOBNRv2.o write_waveform.c -o write_waveform $(LIBS)
+oneapi: parareal_oneapi.o LALSimIMREOBNRv2.o src/write_waveform.c
+	$(CXX) $(CFLAGS) $(CXXFLAGS) $(INCLUDE) parareal_oneapi.o LALSimIMREOBNRv2.o src/write_waveform.c -o write_waveform $(LIBS)
 
 LALSimIMREOBNRv2.o : src/LALSimIMREOBNRv2.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c src/LALSimIMREOBNRv2.c -fopenmp
