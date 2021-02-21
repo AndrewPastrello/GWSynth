@@ -52,7 +52,6 @@ auto lngamma_lanczos_complex(double zr, double zi) {
   int k;
 
   double Ag_r, Ag_i;
-  double yi_tmp_val, yi_tmp_err;
 
   zr -= 1.0; /* Lanczos writes z! instead of Gamma(z) */
 

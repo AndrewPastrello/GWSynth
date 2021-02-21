@@ -125,10 +125,9 @@ initialize:
          int buf_offset = i * (bufferlength / n_slices);
          // Last thread stops on stopping condition, others stop on time
          int stop_on_time = i == n_slices - 1 ? false : true;
-         int stopped_on_condition =
-             rk42(&fine_params[i], &y_initf[i * nn], t_initf[i], t_endf[i], dt,
-                  fine_tol, stop_on_time, &t_buf[buf_offset],
-                  &y_buf[buf_offset * nn], &fine_steps[i]);
+         rk42(&fine_params[i], &y_initf[i * nn], t_initf[i], t_endf[i], dt,
+              fine_tol, stop_on_time, &t_buf[buf_offset],
+              &y_buf[buf_offset * nn], &fine_steps[i]);
          for (int k = 0; k < nn; k++) {
            y_fine0[i * nn + k] = y_buf[(buf_offset + fine_steps[i]) * nn + k];
          }
@@ -146,9 +145,8 @@ initialize:
     for (int i = iteration + 1; i < n_slices; i++) {
       int stop_on_time = i == n_slices - 1 ? false : true;
       int steps;
-      int stopped_on_condition =
-          rk42(&coarse_params, &y_initc[i * nn], t_initf[i], t_endf[i], dt,
-               coarse_tol, stop_on_time, coarse_t_buf, coarse_y_buf, &steps);
+      rk42(&coarse_params, &y_initc[i * nn], t_initf[i], t_endf[i], dt,
+           coarse_tol, stop_on_time, coarse_t_buf, coarse_y_buf, &steps);
       for (int k = 0; k < nn; k++) {
         y_coarse1[i * nn + k] = coarse_y_buf[steps * nn + k];
         if (i < n_slices - 1) {
@@ -169,7 +167,6 @@ initialize:
     }
 
     REAL8 max_rerr = 0;
-    int offset = 0;
     for (int i = iteration + 2; i < n_slices; i++) {
       // Last point of previous time slice
       REAL8 *y_new = y_correct + (i - 1) * nn;

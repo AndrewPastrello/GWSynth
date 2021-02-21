@@ -1,6 +1,6 @@
 CC=clang-10
 CXX=dpcpp
-CFLAGS=-g -O3 -ffast-math -Wno-macro-redefined
+CFLAGS=-g -O3 -ffast-math -Wno-macro-redefined -Wall
 CXXFLAGS=-std=c++20 -Wno-deprecated-anon-enum-enum-conversion
 INCLUDE= -Isrc $(shell pkg-config --cflags lal lalsimulation gsl)
 LIBS= $(shell pkg-config --libs lal lalsimulation gsl) -lm -fopenmp

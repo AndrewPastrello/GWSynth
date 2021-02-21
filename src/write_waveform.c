@@ -4,7 +4,7 @@
 #include "LALSimIMREOBNRv2.h"
 #include "tinywav/tinywav.c"
 
-int write_wav(char *filename, int sample_rate, REAL8TimeSeries *hplus,
+int write_wav(const char *filename, int sample_rate, REAL8TimeSeries *hplus,
               REAL8TimeSeries *hcross) {
   const int NUM_CHANNELS = 2;
   //   const int SAMPLE_RATE = 1.0 / params->deltaT;
@@ -68,9 +68,8 @@ int main(int argc, char *argv[]) {
       "                           in the parareal algorithm (default "
       "32)\n";
 
-  int filename_ind = 0;
-  char *default_filename = "waveform.wav";
-  char *filename = default_filename;
+  const char *default_filename = "waveform.wav";
+  const char *filename = default_filename;
 
   REAL8 m1 = 10;
   REAL8 m2 = 1.5;
@@ -121,11 +120,11 @@ int main(int argc, char *argv[]) {
   const REAL8 deltaT = 1.0 / sample_rate;
   const REAL8 distance = 1e6;
 
-  int ret = XLALSimIMREOBNRv2Generator(
-      &hplus, &hcross, NULL, phiRef, deltaT, m1 * LAL_MSUN_SI, m2 * LAL_MSUN_SI,
-      freq_min, distance, inclination, 1, n_slices);
+  XLALSimIMREOBNRv2Generator(&hplus, &hcross, NULL, phiRef, deltaT,
+                             m1 * LAL_MSUN_SI, m2 * LAL_MSUN_SI, freq_min,
+                             distance, inclination, 1, n_slices);
 
-  write_wav("test.wav", sample_rate, hplus, hcross);
+  write_wav(filename, sample_rate, hplus, hcross);
   printf("Wrote %s\n", filename);
   if (hplus) XLALDestroyREAL8TimeSeries(hplus);
   if (hcross) XLALDestroyREAL8TimeSeries(hcross);

@@ -78,8 +78,9 @@ static size_t find_instant_freq(const REAL8TimeSeries *hp,
                                 const REAL8TimeSeries *hc, const REAL8 target,
                                 const size_t start, const int fsign);
 
-static size_t find_instant_freq_hlm(const COMPLEX16TimeSeries *hlm,
-                                    const REAL8 target, const size_t start);
+static UNUSED size_t find_instant_freq_hlm(const COMPLEX16TimeSeries *hlm,
+                                           const REAL8 target,
+                                           const size_t start);
 
 /*-------------------------------------------------------------------*/
 /*                      pseudo-4PN functions                         */
@@ -1116,7 +1117,7 @@ int XLALSimIMREOBNRv2Generator(REAL8TimeSeries **hplus,
 
   REAL8 rmin = 20; /* Smallest value of r at which to generate the waveform */
 
-  UINT4 i, j;
+  UINT4 i;
 
   INT4 nModes; /* number of modes required */
 
@@ -1138,10 +1139,6 @@ int XLALSimIMREOBNRv2Generator(REAL8TimeSeries **hplus,
 
   const REAL8 prInitMin = -10.;
   const REAL8 prInitMax = 5.;
-
-  /* Accuracies of adaptive Runge-Kutta integrator */
-  const REAL8 EPS_ABS = 1.0e-12;
-  const REAL8 EPS_REL = 1.0e-10;
 
   REAL8 tStepBack; /* We need to step back 20M to attach ringdown */
   UINT4 nStepBack; /* Num points to step back */

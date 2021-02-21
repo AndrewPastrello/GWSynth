@@ -144,7 +144,7 @@ static int XLALFirstStoppingCondition(
  * ringdown, so to make sure we won't be interpolating data too near the final
  * points, we push this integration as far as is feasible.
  */
-static int XLALHighSRStoppingCondition(
+static UNUSED int XLALHighSRStoppingCondition(
     double UNUSED t,        /**<< Current time (required by GSL) */
     const double values[],  /**<< Current dynamics  */
     double dvalues[],       /**<< Derivatives of dynamics w.r.t. time */
@@ -165,10 +165,10 @@ static int XLALHighSRStoppingCondition(
   return 0;
 }
 
-static int rk42(void *params, const REAL8 y_init[nn], const REAL8 t_init,
-                const REAL8 t_end, REAL8 dt, const REAL8 tol,
-                const int stop_on_t, REAL8 *t_out, REAL8 *y_out,
-                int *steps_out) {
+static UNUSED int rk42(void *params, const REAL8 y_init[nn], const REAL8 t_init,
+                       const REAL8 t_end, REAL8 dt, const REAL8 tol,
+                       const int stop_on_t, REAL8 *t_out, REAL8 *y_out,
+                       int *steps_out) {
   REAL8 t = t_init;
 
   REAL8 y[nn];

@@ -313,8 +313,6 @@ UNUSED static std::complex<REAL8> XLALSimIMREOBCalculateNewtonianMultipole(
     INT4 m,           /**<< Mode m */
     EOBParams *params /**<< Pre-computed coefficients, parameters, etc. */
 ) {
-  INT4 xlalStatus;
-
   INT4 epsilon = (l + m) % 2;
 
   /* Calculate the necessary Ylm */
@@ -352,7 +350,6 @@ UNUSED static std::complex<REAL8> XLALSimIMREOBGetFactorizedWaveform(
         *params /**<< Structure containing pre-computed coefficients, etc. */
 ) {
   /* Status of function calls */
-  INT4 status;
   INT4 i;
 
   REAL8 eta;
