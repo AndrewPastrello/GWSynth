@@ -915,6 +915,17 @@ static int calculate_modes(
     REAL8Vector *p1 = XLALCreateREAL8Vector(lengthHiSR);
     REAL8Vector *p2 = XLALCreateREAL8Vector(lengthHiSR);
 
+    memset(sigReHi->data, 0, sigReHi->length * sizeof(REAL8));
+    memset(sigImHi->data, 0, sigImHi->length * sizeof(REAL8));
+    memset(phseHi->data, 0, phseHi->length * sizeof(REAL8));
+    memset(omegaHi->data, 0, omegaHi->length * sizeof(REAL8));
+    memset(ampNQC->data, 0, ampNQC->length * sizeof(REAL8));
+    memset(q1->data, 0, q1->length * sizeof(REAL8));
+    memset(q2->data, 0, q2->length * sizeof(REAL8));
+    memset(q3->data, 0, q3->length * sizeof(REAL8));
+    memset(p1->data, 0, p1->length * sizeof(REAL8));
+    memset(p2->data, 0, p2->length * sizeof(REAL8));
+
     INT4 count = 0;
 
     INT4 modeL = lmModes[currentMode][0];
