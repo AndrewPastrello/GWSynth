@@ -8,7 +8,7 @@ GWSynth uses the LAL and LALSimulation components of LALSuite: https://wiki.ligo
 LAL and LALSimulation have the following dependencies:
 * GSL
 * fftw3
-* hdf5
+* hdf5 1.10
 
 ## Compilation
 An OpenMP implementation of the code can be compiled with only a C compiler. 
