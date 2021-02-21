@@ -98,7 +98,7 @@ initialize:
     int stopped_on_condition =
         rk42(&coarse_params, &y_initc[i * nn], t_initf[i], t_endf[i], dt,
              coarse_tol, stop_on_time, coarse_t_buf, coarse_y_buf, &steps);
-    //  If the guessed t_end is too late
+    //  Reinitialize if the guessed t_end is not in the last slice
     if (stopped_on_condition && i < n_slices - 1) {
       t_end = coarse_t_buf[steps];
       coarse_dt = (t_end - t_init) / n_slices;
@@ -218,12 +218,6 @@ initialize:
     }
   }
 
-  for (int i = 0; i < integrationlength - 1; i++) {
-    if (t_buf[i] >= t_buf[i + 1]) {
-      printf("i: %d, t: %f, %f\n", i, t_buf[i], t_buf[i + 1]);
-    }
-  }
-
   t_end = t_buf[integrationlength - 1];
 
   int outputlen = (int)(t_end / dt) + 1;
@@ -246,11 +240,12 @@ initialize:
     }
   }
 
+  if (interp) XLAL_CALLGSL(gsl_spline_free(interp));
+  if (accel) XLAL_CALLGSL(gsl_interp_accel_free(accel));
+
   if (buf) sycl::free(buf, q);
   if (coarse_buf) sycl::free(coarse_buf, q);
   if (y_flat) sycl::free(y_flat, q);
-  if (interp) XLAL_CALLGSL(gsl_spline_free(interp));
-  if (accel) XLAL_CALLGSL(gsl_interp_accel_free(accel));
   if (fine_steps) sycl::free(fine_steps, q);
   if (t_initf) sycl::free(t_initf, q);
   if (t_endf) sycl::free(t_endf, q);

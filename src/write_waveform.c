@@ -6,8 +6,8 @@
 
 int write_wav(const char *filename, int sample_rate, REAL8TimeSeries *hplus,
               REAL8TimeSeries *hcross) {
-  const int NUM_CHANNELS = 2;
-  //   const int SAMPLE_RATE = 1.0 / params->deltaT;
+  // 1 to output hplus in mono, 2 to output hplus and hcross in stereo
+  const int NUM_CHANNELS = 1;
 
   TinyWav tw;
   tinywav_open_write(
@@ -20,22 +20,28 @@ int write_wav(const char *filename, int sample_rate, REAL8TimeSeries *hplus,
   );
 
   size_t const length = hplus->data->length;
-  size_t const size = 2 * length * sizeof(float);
+  size_t const size = NUM_CHANNELS * length * sizeof(float);
 
   float *buf = (float *)malloc(size);
 
   double max = 0;
   for (int i = 0; i < length; i++) {
     double x = fabs(hplus->data->data[i]);
-    double y = fabs(hcross->data->data[i]);
     max = x > max ? x : max;
-    max = y > max ? y : max;
+  }
+  if (NUM_CHANNELS == 2) {
+    for (int i = 0; i < length; i++) {
+      double y = fabs(hcross->data->data[i]);
+      max = y > max ? y : max;
+    }
   }
   for (int i = 0; i < length; i++) {
     buf[i] = (float)(hplus->data->data[i] / max);
   }
-  for (int i = 0; i < length; i++) {
-    buf[i + length] = (float)(hcross->data->data[i] / max);
+  if (NUM_CHANNELS == 2) {
+    for (int i = 0; i < length; i++) {
+      buf[i + length] = (float)(hcross->data->data[i] / max);
+    }
   }
   tinywav_write_f(&tw, buf, length);
 

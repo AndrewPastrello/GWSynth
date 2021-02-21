@@ -193,11 +193,12 @@ initialize:
     }
   }
 
+  if (interp) XLAL_CALLGSL(gsl_spline_free(interp));
+  if (accel) XLAL_CALLGSL(gsl_interp_accel_free(accel));
+
   if (buf) free(buf);
   if (coarse_buf) free(coarse_buf);
   if (y_flat) free(y_flat);
-  if (interp) XLAL_CALLGSL(gsl_spline_free(interp));
-  if (accel) XLAL_CALLGSL(gsl_interp_accel_free(accel));
   if (fine_steps) free(fine_steps);
   if (t_initf) free(t_initf);
   if (t_endf) free(t_endf);
