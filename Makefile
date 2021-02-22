@@ -35,4 +35,4 @@ parareal_oneapi.o : src/parareal.h src/parareal_oneapi.cpp src/gamma.hpp src/der
 
 .PHONY : clean
 clean :
-	-rm -f *.o lib/*.so bin/*
+	-rm -f generate_waveform.o LALSimIMREOBNRv2.o parareal.o lib/libgwsynth.so bin/write_waveform

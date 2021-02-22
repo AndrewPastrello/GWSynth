@@ -1,6 +1,6 @@
 CC=clang
 CFLAGS=-g -fPIC -O3 -ffast-math -Wno-macro-redefined -Wall
-INCLUDE=-Isrc -Iinclude -I. -Ilib -Ilal/include
+INCLUDE=-Isrc -Iinclude -I. -Ilib $(shell pkg-config --cflags lal lalsimulation gsl)
 LIBS=-llal -llalsimulation -lgsl -lm
 
 
