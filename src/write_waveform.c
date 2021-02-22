@@ -1,11 +1,12 @@
 
 #include <math.h>
+#include <stdlib.h>
 
-#include "LALSimIMREOBNRv2.h"
+#include "gwsynth.h"
 #include "tinywav/tinywav.c"
 
-int write_wav(const char *filename, int sample_rate, REAL8TimeSeries *hplus,
-              REAL8TimeSeries *hcross) {
+int write_wav(const char* filename, float* buf, const int length,
+              const int n_channels, const int sample_rate) {
   // 1 to output hplus in mono, 2 to output hplus and hcross in stereo
   const int NUM_CHANNELS = 1;
 
@@ -19,40 +20,14 @@ int write_wav(const char *filename, int sample_rate, REAL8TimeSeries *hplus,
       filename     // the output path
   );
 
-  size_t const length = hplus->data->length;
-  size_t const size = NUM_CHANNELS * length * sizeof(float);
-
-  float *buf = (float *)malloc(size);
-
-  double max = 0;
-  for (int i = 0; i < length; i++) {
-    double x = fabs(hplus->data->data[i]);
-    max = x > max ? x : max;
-  }
-  if (NUM_CHANNELS == 2) {
-    for (int i = 0; i < length; i++) {
-      double y = fabs(hcross->data->data[i]);
-      max = y > max ? y : max;
-    }
-  }
-  for (int i = 0; i < length; i++) {
-    buf[i] = (float)(hplus->data->data[i] / max);
-  }
-  if (NUM_CHANNELS == 2) {
-    for (int i = 0; i < length; i++) {
-      buf[i + length] = (float)(hcross->data->data[i] / max);
-    }
-  }
   tinywav_write_f(&tw, buf, length);
-
   tinywav_close_write(&tw);
-  free(buf);
 
   return 0;
 }
 
-int main(int argc, char *argv[]) {
-  const char *usage =
+int main(int argc, char* argv[]) {
+  const char* usage =
       "Generate a binary black hole inspiral-merger-ringdown "
       "gravitational waveform using the EOBNRv2 approximant from the "
       "lalsimulation library\n\n"
@@ -68,19 +43,23 @@ int main(int argc, char *argv[]) {
       "reference\n"
       "                           (default 0, face on)\n"
       "--filename FNAME           Output to file FNAME (default waveform.wav)\n"
+
       "--sample-rate SRATE        Sampling rate in Hz (default 96000)\n"
-      "--n-slices SRATE           The number of time slices (threads) to be "
+      "--n-channels NCHANNEL      The number of audio channels 1=mono, "
+      "2=stereo (default 1)"
+      "--n-slices NSLICE          The number of time slices (threads) to be "
       "used\n"
       "                           in the parareal algorithm (default "
       "32)\n";
 
-  const char *default_filename = "waveform.wav";
-  const char *filename = default_filename;
+  const char* default_filename = "waveform.wav";
+  const char* filename = default_filename;
 
-  REAL8 m1 = 10;
-  REAL8 m2 = 1.5;
-  REAL8 inclination = 0;
-  REAL8 sample_rate = 96000;
+  float m1 = 10;
+  float m2 = 1.5;
+  float inclination = 0;
+  float sample_rate = 96000;
+  int n_channels = 1;
   int n_slices = 32;
 
   for (int i = 1; i < argc; ++i) {
@@ -97,13 +76,15 @@ int main(int argc, char *argv[]) {
       filename = argv[i + 1];
     } else if (strcmp(argv[i], "--sample-rate") == 0) {
       sample_rate = atof(argv[++i]);
+    } else if (strcmp(argv[i], "--sample-rate") == 0) {
+      n_channels = atoi(argv[++i]);
     } else if (strcmp(argv[i], "--n-slices") == 0) {
       n_slices = atoi(argv[++i]);
     }
   }
 
   if (m2 > m1) {
-    REAL8 tmp = m1;
+    float tmp = m1;
     m1 = m2;
     m2 = tmp;
   }
@@ -115,23 +96,18 @@ int main(int argc, char *argv[]) {
   m2 = fmin(m2, 0.9 * m1);
   m2 = fmax(m2, 0.15 * m1);
 
-  REAL8 freq_min = 10;
+  float freq_min = 10;
   freq_min = -1.0 / 3.0 * (m1 + m2) + 45;
   freq_min = fmin(freq_min, 45);
   freq_min = fmax(freq_min, 10);
 
-  REAL8TimeSeries *hplus = NULL;
-  REAL8TimeSeries *hcross = NULL;
-  const REAL8 phiRef = 0;
-  const REAL8 deltaT = 1.0 / sample_rate;
-  const REAL8 distance = 1e6;
+  const int length = n_channels * 1000000;
+  float* buf = (float*)malloc(sizeof(float) * length);
 
-  XLALSimIMREOBNRv2Generator(&hplus, &hcross, NULL, phiRef, deltaT,
-                             m1 * LAL_MSUN_SI, m2 * LAL_MSUN_SI, freq_min,
-                             distance, inclination, 1, n_slices);
+  generate_waveform(buf, length, n_channels, sample_rate, m1, m2, inclination,
+                    freq_min, n_slices);
 
-  write_wav(filename, sample_rate, hplus, hcross);
+  write_wav(filename, buf, length, n_channels, sample_rate);
   printf("Wrote %s\n", filename);
-  if (hplus) XLALDestroyREAL8TimeSeries(hplus);
-  if (hcross) XLALDestroyREAL8TimeSeries(hcross);
+  free(buf);
 }

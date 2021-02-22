@@ -1,15 +1,25 @@
-CC=clang-10
+CC=clang
 CXX=dpcpp
-CFLAGS=-g -O3 -ffast-math -Wno-macro-redefined -Wall
+CFLAGS=-g -fPIC -O3 -ffast-math -Wno-macro-redefined -Wall
 CXXFLAGS=-std=c++20 -Wno-deprecated-anon-enum-enum-conversion
-INCLUDE= -Isrc $(shell pkg-config --cflags lal lalsimulation gsl)
-LIBS= $(shell pkg-config --libs lal lalsimulation gsl) -lm -fopenmp
+INCLUDE=-Isrc -Iinclude -Ilib $(shell pkg-config --cflags lal lalsimulation gsl)
+# LIBS= -llal -llalsimulation -lgsl -lm -fopenmp
+LIBS=-llal -llalsimulation -lgsl -lm -fopenmp
 
-openmp: parareal.o LALSimIMREOBNRv2.o src/write_waveform.c
-	$(CC) $(CFLAGS) $(INCLUDE) parareal.o LALSimIMREOBNRv2.o src/write_waveform.c -o write_waveform $(LIBS)
+openmp: libgwsynth.so src/write_waveform.c
+	$(CC) $(CFLAGS) $(INCLUDE) src/write_waveform.c -o bin/write_waveform -Llib -lgwsynth -fopenmp
 
-oneapi: parareal_oneapi.o LALSimIMREOBNRv2.o src/write_waveform.c
-	$(CXX) $(CFLAGS) $(CXXFLAGS) $(INCLUDE) parareal_oneapi.o LALSimIMREOBNRv2.o src/write_waveform.c -o write_waveform $(LIBS)
+oneapi: libgwsynth_oneapi.so src/write_waveform.c
+	$(CXX) $(CFLAGS) $(CXXFLAGS) $(INCLUDE) src/write_waveform.c -o bin/write_waveform_oneapi -Llib -lgwsynth_oneapi -fopenmp -flto
+
+libgwsynth_oneapi.so : parareal_oneapi.o LALSimIMREOBNRv2.o generate_waveform.o
+	$(CXX) -fPIC -shared -Wl,-soname,libgwsynth_oneapi.so -o lib/libgwsynth_oneapi.so parareal_oneapi.o LALSimIMREOBNRv2.o generate_waveform.o $(LIBS)
+
+libgwsynth.so : parareal.o LALSimIMREOBNRv2.o generate_waveform.o
+	$(CC) -shared -Wl,-soname,libgwsynth.so -o lib/libgwsynth.so parareal.o LALSimIMREOBNRv2.o generate_waveform.o $(LIBS)
+
+generate_waveform.o : src/generate_waveform.c
+	$(CC) $(CFLAGS) $(INCLUDE) -c src/generate_waveform.c -fopenmp
 
 LALSimIMREOBNRv2.o : src/LALSimIMREOBNRv2.c
 	$(CC) $(CFLAGS) $(INCLUDE) -c src/LALSimIMREOBNRv2.c -fopenmp
@@ -22,4 +32,4 @@ parareal_oneapi.o : src/parareal.h src/parareal_oneapi.cpp src/gamma.hpp src/der
 
 .PHONY : clean
 clean :
-	-rm parareal_oneapi.o parareal.o LALSimIMREOBNRv2.o write_waveform
+	-rm *.o lib/*.so bin/*
