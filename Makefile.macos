@@ -1,0 +1,26 @@
+CC=clang
+CFLAGS=-g -fPIC -O3 -ffast-math -Wno-macro-redefined -Wall
+INCLUDE=-Isrc -Iinclude -I. -Ilib -Ilal/include
+LIBS=-llal -llalsimulation -lgsl -lm
+
+
+openmp: libgwsynth.dylib src/write_waveform.c
+	mkdir -p bin
+	$(CC) $(CFLAGS) $(INCLUDE) src/write_waveform.c -o bin/write_waveform -Llib
+
+libgwsynth.dylib : parareal.o LALSimIMREOBNRv2.o generate_waveform.o
+	mkdir -p lib
+	$(CC) -dynamiclib -o lib/libgwsynth.dylib parareal.o LALSimIMREOBNRv2.o generate_waveform.o $(LIBS)
+
+generate_waveform.o : src/generate_waveform.c
+	$(CC) $(CFLAGS) $(INCLUDE) -c src/generate_waveform.c
+
+LALSimIMREOBNRv2.o : src/LALSimIMREOBNRv2.c
+	$(CC) $(CFLAGS) $(INCLUDE) -c src/LALSimIMREOBNRv2.c
+
+parareal.o : src/parareal.h src/parareal.c
+	$(CC) $(CFLAGS) $(INCLUDE) -c src/parareal.c
+
+.PHONY : clean
+clean :
+	-rm -f generate_waveform.o LALSimIMREOBNRv2.o parareal.o lib/libgwsynth.dylib bin/write_waveform
