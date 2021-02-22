@@ -6,7 +6,7 @@ LIBS=-llal -llalsimulation -lgsl -lm
 
 openmp: libgwsynth.dylib src/write_waveform.c
 	mkdir -p bin
-	$(CC) $(CFLAGS) $(INCLUDE) src/write_waveform.c -o bin/write_waveform -Llib
+	$(CC) $(CFLAGS) $(INCLUDE) src/write_waveform.c -o bin/write_waveform -Llib -lgwsynth
 
 libgwsynth.dylib : parareal.o LALSimIMREOBNRv2.o generate_waveform.o
 	mkdir -p lib
