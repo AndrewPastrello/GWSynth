@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
   m1 = fmax(m1, 10);
   m2 = fmin(m2, 150);
   m2 = fmax(m2, 1.5);
-  m2 = fmin(m2, 0.9 * m1);
+  m2 = fmin(m2, 0.6 * m1);
   m2 = fmax(m2, 0.15 * m1);
 
   float freq_min = 10;
