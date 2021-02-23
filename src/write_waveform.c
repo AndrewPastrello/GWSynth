@@ -101,11 +101,11 @@ int main(int argc, char* argv[]) {
   freq_min = fmin(freq_min, 45);
   freq_min = fmax(freq_min, 10);
 
-  const int length = n_channels * 1000000;
-  float* buf = (float*)malloc(sizeof(float) * length);
+  const int buf_length = n_channels * 1000000;
+  float* buf = (float*)malloc(sizeof(float) * buf_length);
 
-  generate_waveform(buf, length, n_channels, sample_rate, m1, m2, inclination,
-                    freq_min, n_slices);
+  int length = generate_waveform(buf, buf_length, n_channels, sample_rate, m1,
+                                 m2, inclination, freq_min, n_slices);
 
   write_wav(filename, buf, length, n_channels, sample_rate);
   printf("Wrote %s\n", filename);
