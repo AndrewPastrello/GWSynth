@@ -10,7 +10,27 @@ LAL and LALSimulation have the following dependencies:
 * fftw3
 * hdf5 1.10
 
-## Compilation
-An OpenMP implementation of the code can be compiled with only a C compiler. 
+## Installation
+An OpenMP implementation of the code can be compiled with only a C compiler as follows:
 
-There is also an Intel oneAPI DPC++ implementation that requires the oneAPI Base Toolkit: https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html 
+```
+git clone https://github.com/AndrewPastrello/GWSynth.git --recurse-submodules
+./build_lal.sh
+```
+
+Then make sure liblal and liblalsimulation are in your pkg-config and library paths and run:
+```
+make
+```
+
+This generates `bin/write_waveform`. For usage information run
+```
+write_waveform --help
+```
+
+There is also an Intel oneAPI DPC++ implementation that requires the oneAPI Base Toolkit: https://software.intel.com/content/www/us/en/develop/tools/oneapi/base-toolkit.html
+
+It can be compiled with:
+```
+make oneapi
+```
