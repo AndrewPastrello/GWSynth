@@ -20,8 +20,10 @@ cd lalsimulation-2.5.1
 make -j $NPROC
 make install
 
-export LIBRARY_PATH="$GWSYNTH_DIR/lal/lib:LIBRARY_PATH"
-export LD_LIBRARY_PATH="$GWSYNTH_DIR/lal/lib:$LD_LIBRARY_PATH"
-
-echo 'export LIBRARY_PATH="$GWSYNTH_DIR/lal/lib:LIBRARY_PATH'
-echo 'export LD_LIBRARY_PATH="$GWSYNTH_DIR/lal/lib:$LD_LIBRARY_PATH'
+echo "LAL and LALSimulation have been installed in $GWSYNTH_DIR/lal"
+echo "Run the following command to add them to your pkg-config and library paths"
+echo
+echo "export GWSYNTH_DIR=$PWD"
+echo 'export PKG_CONFIG_PATH="$GWSYNTH_DIR/lal/lib/pkgconfig:$PKG_CONFIG_PATH"'
+echo 'export LIBRARY_PATH="$GWSYNTH_DIR/lal/lib:LIBRARY_PATH"'
+echo 'export LD_LIBRARY_PATH="$GWSYNTH_DIR/lal/lib:$LD_LIBRARY_PATH"'

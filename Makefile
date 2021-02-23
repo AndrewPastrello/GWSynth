@@ -3,7 +3,7 @@ CXX=dpcpp
 CFLAGS=-g -fPIC -O3 -ffast-math -Wno-macro-redefined -Wall
 CXXFLAGS=-std=c++20 -Wno-deprecated-anon-enum-enum-conversion
 INCLUDE=-Isrc -Iinclude -Ilib $(shell pkg-config --cflags lal lalsimulation gsl)
-LIBS=-llal -llalsimulation -lgsl -lm -fopenmp
+LIBS=$(shell pkg-config --libs lal lalsimulation gsl) -lm -fopenmp
 
 openmp: libgwsynth.so src/write_waveform.c
 	mkdir -p bin
